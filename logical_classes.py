@@ -180,6 +180,21 @@ class Statement(object):
             self.predicate = statement_list[0]
             self.terms = [t if isinstance(t, Term) else Term(t) for t in statement_list[1:]]
 
+    def __lt__(self, other):
+        if self.predicate != other.predicate:
+            return self.predicate < other.predicate
+        length = len(self.terms)
+        isSelfShorter = True
+        if len(other.terms) < length:
+            length = len(other.terms)
+            isSelfShorter = False
+        for i in range(length):
+            selfT = self.terms[i].term.element
+            otherT = other.terms[i].term.element
+            if selfT != otherT:
+                return selfT < otherT
+        return isSelfShorter
+
     def __repr__(self):
         """Define internal string representation
         """

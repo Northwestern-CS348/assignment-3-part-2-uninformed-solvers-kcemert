@@ -1,6 +1,6 @@
 """
 For a game where there are 3 disks,
-write down the Facts and Rules to model the game state where 
+write down the Facts and Rules to model the game state where
 all disks are on peg1.
 
         |            |            |
@@ -10,9 +10,44 @@ all disks are on peg1.
      ---|---         |            |
 ==========================================
        peg1         peg2         peg3
-       
-Example: 
+
+Example:
 fact: (pred obj1 obj2)
 rule: ((pred obj1 obj2) (pred obj2 obj3)) -> (pred obj1 obj3)
 
 """
+
+fact: (inst disk1 Disk)
+fact: (inst disk2 Disk)
+fact: (inst disk3 Disk)
+
+
+fact: (inst peg1 Peg)
+fact: (inst peg2 Peg)
+fact: (inst peg3 Peg)
+
+fact: (inst base1 Base)
+fact: (inst base2 Base)
+fact: (inst base3 Base)
+
+fact: (on disk1 peg1)
+fact: (on disk2 peg1)
+fact: (on disk3 peg1)
+
+
+fact: (top disk1 peg1)
+fact: (top base2 peg2)
+fact: (top base3 peg3)
+
+fact: (larger disk2 disk1)
+fact: (larger disk3 disk2)
+
+
+fact: (above disk1 disk2)
+fact: (above disk2 disk3)
+fact: (above disk3 base1)
+
+rule: ((top ?base ?peg) (inst ?base Base)) -> (empty ?peg)
+rule: ((larger ?disk1 ?disk2) (larger ?disk2 ?disk3)) -> (larger ?disk1 ?disk3)
+rule: ((top ?disk_move ?peg_initial) (top ?disk_target ?peg_target) (inst ?disk_move Disk) (larger ?disk_target ?disk_move) (inst ?disk_target Disk)) -> (movable ?disk_move ?peg_initial ?peg_target)
+rule: ((empty ?peg_target) (top ?disk ?peg_initial) (inst ?disk Disk)) -> (movable ?disk ?peg_initial ?peg_target)

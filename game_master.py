@@ -102,14 +102,20 @@ class GameMaster(object):
 
     def getMovables(self):
         """
+        Returns a list of MOVABLE statements that represent the moves currently available.
+        
+        The output Statements will be sorted in ascending orders, first order by the text of predicates,
+        then by each Term in the Statement.
+
         Returns:
             A list of MOVABLE statements indicating the presently viable moves, if at least one is present;
             False otherwise.
         """
         listOfBindings = self.kb.kb_ask(self.moveableQuery)
         if listOfBindings:
-            return [instantiate(self.moveableQuery.statement,bindings)\
-                     for bindings in listOfBindings]
+            statements = [instantiate(self.moveableQuery.statement,bindings) for bindings in listOfBindings]
+            statements.sort()
+            return statements
         else:
             return listOfBindings
 

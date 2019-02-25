@@ -29,10 +29,9 @@ class TowerOfHanoiGame(GameMaster):
         Returns:
             A Tuple of Tuples that represent the game state
         """
-        # find all disks on pegs 1-3
+        
         pegs = ["peg1", "peg2", "peg3"]
 
-        # final game state tuple list
         game_state = []
         
         for peg in pegs:
@@ -50,8 +49,6 @@ class TowerOfHanoiGame(GameMaster):
 
         return tuple(game_state)
             
-
-
     def makeMove(self, movable_statement):
         """
         Takes a MOVABLE statement and makes the corresponding move. This will
@@ -68,7 +65,6 @@ class TowerOfHanoiGame(GameMaster):
         
         pred = movable_statement.predicate
         
-        # movable statement?
         if pred != "movable":
             print("Error: statement not a movable statement")
             return
@@ -78,48 +74,35 @@ class TowerOfHanoiGame(GameMaster):
         peg = terms[1]
         targetpeg = terms[2]
 
-        # retract related facts
         related = ["on", "top"]
 
         for pred in related:
             remove1 = parse_input("fact: (" + str(pred) + " " + str(disk) + " " + str(peg) + ")")
             self.kb.kb_retract(remove1)
             
-        # change the top of the current peg
         disk_base_under_move = self.kb.kb_ask(parse_input("fact: (above " + str(disk) + " ?d)"))
         newtop = str(disk_base_under_move[0].bindings[0].constant)
 
-        
         add = parse_input("fact: (top " + newtop + " " + str(peg) + ")")
         self.kb.kb_assert(add)
 
-
-        # remove the above fact
         remove2 = parse_input("fact: (above " + str(disk) + " " + newtop + ")")
         self.kb.kb_retract(remove2)
 
-
-        # add new disk on target peg
         newfact = parse_input("fact: (on "  + str(disk) + " " + str(targetpeg) + ")")
         self.kb.kb_assert(newfact)
 
-        # find current top of target peg
         ask = parse_input("fact: (top ?d " + str(targetpeg) + ")")
         ttop = self.kb.kb_ask(ask)
         newtop = str(ttop[0].bindings[0].constant)
         
-        # remove current top of target peg
         self.kb.kb_retract(parse_input("fact: (top " + newtop + " " + str(targetpeg) + ")"))
 
-        
-        # assert disk above previous top
         f1 = parse_input("fact: (above " + str(disk) + " " + newtop + ")")
         self.kb.kb_assert(f1)
 
-        # assert new top of the target
         self.kb.kb_assert(parse_input("fact: (top " + str(disk) + " " + str(targetpeg) + ")"))
 
-        
         return
 
     def reverseMove(self, movable_statement):
@@ -168,14 +151,11 @@ class Puzzle8Game(GameMaster):
         row_names = ["pos1", "pos2", "pos3"]
 
         for r in row_names:        
-            # iterate through the rows
             posfact = Fact(Statement(["posxy", "?tile", "?posx", str(r)]))
             positions = self.kb.kb_ask(posfact)
 
-            # fill tuple with dummy values
-            posnums = [10, 11, 12]
-
-
+            posnums = [0, 0, 0]
+            
             for tile in positions:
                 name = str(tile.bindings[0].constant)
                 posx = str(tile.bindings[1].constant)
@@ -184,7 +164,6 @@ class Puzzle8Game(GameMaster):
                     order = -1
                 else:
                     order = int(name[-1])
-                
                 if posx == "pos1":
                     posnums[0] = order
                 elif posx == "pos2":
@@ -196,8 +175,6 @@ class Puzzle8Game(GameMaster):
             game_state.append(tuple(posnums))
 
         return tuple(game_state)
-
-
 
 
     def makeMove(self, movable_statement):
@@ -227,17 +204,12 @@ class Puzzle8Game(GameMaster):
             print("Error: This is not a movable statement")
             return
     
-
-        # retract previous position of tile
         remove = Fact(Statement(["posxy", str(tile), str(tpx), str(tpy)]))
         self.kb.kb_retract(remove)
 
-        
-        # retract previous position of empty space
         remove2 = Fact(Statement(["posxy", "empty", str(epx), str(epy)]))
         self.kb.kb_retract(remove2)
        
-        # add new positions 
         newfact = Fact(Statement(["posxy", str(tile), str(epx), str(epy)]))
         self.kb.kb_add(newfact)
         
@@ -246,7 +218,6 @@ class Puzzle8Game(GameMaster):
         self.kb.kb_add(newfact2)
 
         return
-
 
     def reverseMove(self, movable_statement):
         """

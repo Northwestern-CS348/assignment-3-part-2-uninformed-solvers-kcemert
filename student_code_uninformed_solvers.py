@@ -47,7 +47,6 @@ class SolverDFS(UninformedSolver):
             True if the desired solution state is reached, False otherwise
         """
 
-
         if self.currentState.state == self.victoryCondition:
             return True
         self.visited[self.currentState] = True
@@ -113,8 +112,6 @@ class SolverBFS(UninformedSolver):
 
         return children
 
-    
-
     def solveOneStep(self):
         """
         Go to the next state that has not been explored. If a
@@ -137,31 +134,24 @@ class SolverBFS(UninformedSolver):
         if self.currentState.depth == 0:
             self.list_moves_root_to_child[self.currentState] = []
 
-        # get the children of the current node
         children = self.get_children()
         self.currentState.children = children
 
-        # get the list of moves for the current state to get to the root
         prev_list_moves = self.list_moves_root_to_child[self.currentState]
         prev_list_moves.reverse()
 
-        # get the list of moves for the new current state to get from the root to the state
         self.currentState = self.nodes.get()
         curr_list_moves = self.list_moves_root_to_child[self.currentState]
         
-
-        # get the gm to the root
         for m in prev_list_moves:
             self.gm.reverseMove(m.requiredMovable)
 
-        # get the gm to the current state
         for m in curr_list_moves:
             self.gm.makeMove(m.requiredMovable)
 
         if self.currentState.state == self.victoryCondition:
             return True
         
-
         return False
         
         
